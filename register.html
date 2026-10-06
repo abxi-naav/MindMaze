@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participant Registration | MINDMAZE - TANTRA 2026</title>
+  <meta name="description" content="Register for MINDMAZE college tech-fest quiz competition presented by ENIGMA at TANTRA 2026.">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/register.css">
+  
+  <!-- Supabase JS Client library from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar" aria-label="Main Navigation">
+    <div class="nav-brand">
+      <div class="nav-logo">MIND<span>MAZE</span></div>
+      <span class="nav-badge">TANTRA 2026</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="register.html" class="nav-link">Register</a>
+      <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+      <a href="admin.html" class="nav-link" style="color:var(--accent-primary);">Admin Portal</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-wrapper">
+    <div class="register-container">
+      
+      <!-- Attempt Notice Box (shown if participant already completed quiz) -->
+      <div id="already-attempted-notice" class="attempt-notice-box" style="display: none;">
+        <h2 class="attempt-notice-title">ATTEMPT COMPLETED!</h2>
+        <p class="mb-3">You have already submitted an attempt for MINDMAZE in this competition.</p>
+        <div class="d-flex gap-2 justify-center" style="justify-content: center; flex-wrap: wrap;">
+          <a href="result.html" class="btn btn-primary">VIEW MY RESULT</a>
+          <a href="leaderboard.html" class="btn btn-secondary">VIEW LEADERBOARD</a>
+        </div>
+      </div>
+
+      <!-- Registration Form Card -->
+      <div id="registration-card" class="brutal-card">
+        <div class="register-header">
+          <h1 class="register-title">ENTER MINDMAZE</h1>
+          <p class="register-subtitle">Fill in your participant details to begin</p>
+        </div>
+
+        <div id="error-message-box" class="form-error-msg" role="alert"></div>
+
+        <form id="registration-form" novalidate>
+          <div class="form-group">
+            <label for="fullname" class="form-label">
+              FULL NAME <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="fullname" 
+              name="fullname" 
+              class="form-control" 
+              placeholder="e.g. Alex Mercer" 
+              required
+              autocomplete="name"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="college" class="form-label">
+              COLLEGE / INSTITUTION <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="college" 
+              name="college" 
+              class="form-control" 
+              placeholder="e.g. Apex Institute of Technology" 
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="phone" class="form-label">
+              PHONE NUMBER <span class="required">*</span>
+              <small style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">(Used as unique identity for single attempt verification)</small>
+            </label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              class="form-control" 
+              placeholder="e.g. 9876543210" 
+              required
+              autocomplete="tel"
+            >
+          </div>
+
+          <!-- Fullscreen Option Toggle -->
+          <label class="fullscreen-opt-card">
+            <input type="checkbox" id="enable-fullscreen" style="display: none;" checked>
+            <span class="checkbox-custom"></span>
+            <span class="fullscreen-opt-text">
+              ENTER FULLSCREEN MODE FOR QUIZ
+              <small>Recommended for uninterrupted focus during competition</small>
+            </span>
+          </label>
+
+          <button type="submit" id="btn-start-quiz" class="btn btn-primary" style="width: 100%;">
+            START QUIZ →
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span>TANTRA 2026</span> • <span>ENIGMA PRESENTS</span> • <span class="text-accent">MINDMAZE</span>
+      </div>
+      <div class="footer-text">
+        © 2026 ENIGMA Tech-Fest Competition.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/supabase-config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check existing attempt
+      const attempt = getStorage(STORAGE_KEYS.ATTEMPT);
+      if (attempt) {
+        document.getElementById('already-attempted-notice').style.display = 'block';
+      }
+
+      // Pre-fill existing participant details if any
+      const existing = getStorage(STORAGE_KEYS.PARTICIPANT);
+      if (existing) {
+        if (existing.name) document.getElementById('fullname').value = existing.name;
+        if (existing.college) document.getElementById('college').value = existing.college;
+        if (existing.phone) document.getElementById('phone').value = existing.phone;
+      }
+
+      const form = document.getElementById('registration-form');
+      const errorBox = document.getElementById('error-message-box');
+      const submitBtn = document.getElementById('btn-start-quiz');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('fullname').value.trim();
+        const college = document.getElementById('college').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const enableFullscreen = document.getElementById('enable-fullscreen').checked;
+
+        // Validation
+        if (!name || !college || !phone) {
+          errorBox.textContent = '⚠️ All fields are required. Please complete the form.';
+          errorBox.classList.add('visible');
+          return;
+        }
+
+        if (phone.replace(/\D/g, '').length < 7) {
+          errorBox.textContent = '⚠️ Please enter a valid phone number.';
+          errorBox.classList.add('visible');
+          return;
+        }
+
+        errorBox.classList.remove('visible');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'REGISTERING IN DATABASE...';
+
+        // 1. Central Registration via Supabase
+        const regResult = await registerParticipantSupabase(name, college, phone);
+
+        if (!regResult.success) {
+          errorBox.textContent = `⚠️ Registration Error: ${regResult.error}`;
+          errorBox.classList.add('visible');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'START QUIZ →';
+          return;
+        }
+
+        // Save local participant token
+        const participantData = {
+          id: regResult.data.id,
+          accessToken: regResult.data.accessToken,
+          name: regResult.data.name,
+          college: regResult.data.college,
+          registeredAt: new Date().toISOString()
+        };
+
+        setStorage(STORAGE_KEYS.PARTICIPANT, participantData);
+
+        // Request fullscreen if opted
+        if (enableFullscreen && document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(err => {
+            console.warn('Fullscreen request deferred or declined:', err);
+          }).finally(() => {
+            window.location.href = 'quiz.html';
+          });
+        } else {
+          window.location.href = 'quiz.html';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
