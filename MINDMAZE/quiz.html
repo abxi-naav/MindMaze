@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINDMAZE Quiz Competition | TANTRA 2026</title>
+  <meta name="description" content="Live Quiz Workspace - MINDMAZE College Tech-Fest Competition by ENIGMA.">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/quiz.css">
+  
+  <!-- Supabase JS Client library from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar" aria-label="Quiz Workspace Navigation">
+    <div class="nav-brand">
+      <div class="nav-logo">MIND<span>MAZE</span></div>
+      <span class="nav-badge">TANTRA 2026</span>
+    </div>
+    <div class="anticheat-info">
+      <span id="chip-tab-switches" class="counter-chip">TAB SWITCHES: 0</span>
+      <span id="chip-fs-exits" class="counter-chip">FULLSCREEN EXITS: 0</span>
+    </div>
+  </nav>
+
+  <!-- Main Workspace -->
+  <main class="main-wrapper">
+    
+    <!-- Floating Anti-Cheat Warning Alert -->
+    <div id="floating-warning-alert" class="warning-alert-floating" role="alert">
+      <span id="warning-alert-msg">Warning: Leaving the quiz window has been detected.</span>
+      <button type="button" onclick="this.parentElement.classList.remove('visible')" style="background:none; border:none; color:#FFF; font-weight:900; cursor:pointer; font-size:1.2rem;">✕</button>
+    </div>
+
+    <!-- Sticky Quiz Top Header Panel -->
+    <section class="quiz-top-panel">
+      <div class="quiz-meta-row">
+        <div class="question-counter-badge" id="question-counter">
+          QUESTION 01 / 20
+        </div>
+
+        <div class="timer-box" id="timer-box">
+          <span class="timer-label">TIME LEFT</span>
+          <span class="timer-clock" id="timer-clock">15:00</span>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        <span id="progress-text" class="progress-text">0% COMPLETED (0/20)</span>
+      </div>
+    </section>
+
+    <!-- Main Grid Workspace -->
+    <div class="quiz-grid-layout">
+      
+      <!-- Left Column: Active Question Card -->
+      <section class="question-card">
+        <div class="category-tag">
+          <span class="tag tag-accent" id="question-category">CATEGORY</span>
+        </div>
+
+        <h2 class="question-text" id="question-text">
+          Loading question...
+        </h2>
+
+        <!-- Answer Options Cards -->
+        <div class="options-grid" id="options-grid" role="radiogroup" aria-label="Answer Options">
+          <!-- Dynamic options populated by quiz.js -->
+        </div>
+
+        <!-- Navigation Buttons Row -->
+        <div class="quiz-nav-row">
+          <button type="button" id="btn-prev" class="btn btn-outline" onclick="previousQuestion()">
+            ← PREVIOUS
+          </button>
+          
+          <button type="button" id="btn-fs" class="btn btn-secondary" onclick="toggleFullscreenMode()" title="Toggle Fullscreen">
+            ⛶ FULLSCREEN
+          </button>
+
+          <button type="button" id="btn-next" class="btn btn-outline" onclick="nextQuestion()">
+            NEXT →
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Column: Sidebar Question Navigator -->
+      <aside class="navigator-card">
+        <h3 class="navigator-title">
+          <span>QUESTIONS</span>
+          <span style="font-size: 0.9rem; font-family: var(--font-body); font-weight:700;">20 TOTAL</span>
+        </h3>
+
+        <div class="navigator-grid" id="navigator-grid">
+          <!-- Dynamic 01 - 20 badges populated by quiz.js -->
+        </div>
+
+        <div class="nav-legend">
+          <div class="legend-item">
+            <span class="legend-box legend-current"></span>
+            <span>CURRENT QUESTION</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-box legend-answered"></span>
+            <span>ANSWERED</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-box legend-unanswered"></span>
+            <span>UNANSWERED</span>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span>TANTRA 2026</span> • <span>ENIGMA PRESENTS</span> • <span class="text-accent">MINDMAZE</span>
+      </div>
+      <div class="footer-text">
+        © 2026 ENIGMA Tech-Fest Quiz Competition.
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript Modules -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/quiz.js"></script>
+</body>
+</html>
